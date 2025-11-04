@@ -55,7 +55,6 @@ class Producto:
     def __str__(self):
         return f"[{self.codigo}]  {self.nombre} - {self.precio} € ( {self.stock} uds.) {self.proveedor}"
 
-
 # ======================================================
 # Clase Inventario
 # ======================================================
@@ -64,7 +63,7 @@ class Inventario:
     nombre_fichero = None
     productos = []
 
-    def __init__(self, nombre_fichero):
+    def __init__(self, nombre_fichero:str):
        self.nombre_fichero = nombre_fichero
 
     def cargar(self):
@@ -73,9 +72,10 @@ class Inventario:
         Si el fichero no existe, crea un inventario vacío.
         """
 
-        with open("inventario.json", "r", encoding="utf-8") as archivo:
+        with open(self.nombre_fichero, "r", encoding="utf-8") as archivo:
             self.productos = json.load(archivo)
         
+        # para pruebas
         for i in self.productos:
             print(i)
 
@@ -85,29 +85,37 @@ class Inventario:
         Convierte los objetos Producto y Proveedor en diccionarios.
         """
         
-        with open("inventario.json", "w", encoding="utf-8") as archivo:
-            self.productos = json.dump(self.productos, archivo)
+        with open(self.nombre_fichero, "w", encoding="utf-8") as archivo:
+            json.dump(self.productos, archivo, indent=2)
 
     def anadir_producto(self, producto):
         """
         Añade un nuevo producto al inventario si el código no está repetido.
         """
-        
+        for i in self.productos:
+            if i["codigo"] == producto.codigo:
+                print(" Error el producto ya existe")
+                return 0
+
         self.productos.append(producto)
+        self.guardar()
 
     def mostrar(self):
         """
         Muestra todos los productos del inventario.
         """
         for i in self.productos:
-            print(f"[{i["codigo"]}]  {i["nombre"]} - {i["precio"]} € ( {i["stock"]} uds.) {i["proveedor"]}")
+            print(f"[{i["codigo"]}]  {i["nombre"]} - {i["precio"]} € ( {i["stock"]} uds.)")
 
     def buscar(self, codigo):
         """
         Devuelve el producto con el código indicado, o None si no existe.
         """
-        # TODO: buscar un producto por código
-        pass
+        for producto in self.productos:
+            if producto["codigo"] == codigo:
+                return producto
+            else:
+                return None
 
     def modificar(self, codigo, nombre=None, precio=None, stock=None):
         """
@@ -120,8 +128,14 @@ class Inventario:
         """
         Elimina un producto del inventario según su código.
         """
-        # TODO: eliminar el producto de la lista
-        pass
+        i = 0
+        for producto in self.productos:
+            if producto["codigo"] == codigo:
+                self.productos.remove(producto)
+            else:
+                return None
+        
+        self.guardar()
 
     def valor_total(self):
         """
@@ -144,6 +158,7 @@ class Inventario:
 # ======================================================
 
 def main():
+    # Aviso que por ahora todo lo que "guarda" corrompe el archivo
     inventario = Inventario("inventario.json")
     inventario.cargar()
 
@@ -167,18 +182,20 @@ def main():
                 nombre = input("¿Como se llama el producto?: ")
                 precio = int(input("¿Cuanto vale el producto?: "))
                 stock = int(input("¿Cuatas unidades hay?: "))
-                proveedor = Proveedor("hola", "wenas") 
+                proveedor = Proveedor("test", "test")
 
                 producto = Producto(codigo, nombre, precio, stock, proveedor)
                 inventario.anadir_producto(producto)
             case "2":
                 inventario.mostrar()
             case "3":
-                pass
+                codigo = input("¿Que codigo quires buscar?: ")
+                print(inventario.buscar(codigo))
             case "4":
                 pass
             case "5":
-                pass
+                codigo = input("¿Que codigo quires eliminar?: ")
+                inventario.eliminar(codigo)
             case "6":
                 pass
             case "7":
