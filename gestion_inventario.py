@@ -23,13 +23,15 @@ import os
 # ======================================================
 
 class Proveedor:
-    def __init__(self, nombre, contacto):
-        # TODO: definir los atributos de la clase
-        pass
+    nombre = None
+    contacto = None
+       
+    def __init__(self, nombre: str, contacto: str):
+        self.nombre = nombre
+        self.contacto = contacto
 
     def __str__(self):
-        # TODO: devolver una cadena legible con el nombre y el contacto del proveedor
-        pass
+       return f"Proveedor:{self.nombre} ({self.contacto})"
 
 
 # ======================================================
@@ -37,14 +39,21 @@ class Proveedor:
 # ======================================================
 
 class Producto:
-    def __init__(self, codigo, nombre, precio, stock, proveedor):
-        # TODO: definir los atributos de la clase
-        pass
+    codigo = None
+    nombre = None
+    precio = None
+    stock = None
+    proveedor = None
+
+    def __init__(self, codigo:str, nombre: str, precio:float, stock:int, proveedor:Proveedor):
+        self.codigo = codigo
+        self.nombre = nombre
+        self.precio = precio
+        self.stock = stock
+        self.proveedor = proveedor
 
     def __str__(self):
-        # TODO: devolver una representación legible del producto
-        # Ejemplo: "[P001] Teclado - 45.99 € (10 uds.) | Proveedor: TechZone (ventas@techzone.com)"
-        pass
+        return f"[{self.codigo}]  {self.nombre} - {self.precio} € ( {self.stock} uds.) {self.proveedor}"
 
 
 # ======================================================
@@ -52,39 +61,46 @@ class Producto:
 # ======================================================
 
 class Inventario:
+    nombre_fichero = None
+    productos = []
+
     def __init__(self, nombre_fichero):
-        # TODO: definir los atributos e inicializar la lista de productos
-        pass
+       self.nombre_fichero = nombre_fichero
 
     def cargar(self):
         """
         Carga los datos del fichero JSON si existe y crea los objetos Producto y Proveedor.
         Si el fichero no existe, crea un inventario vacío.
         """
-        # TODO: implementar la lectura del fichero JSON y la creación de objetos
-        pass
+
+        with open("inventario.json", "r", encoding="utf-8") as archivo:
+            self.productos = json.load(archivo)
+        
+        for i in self.productos:
+            print(i)
 
     def guardar(self):
         """
         Guarda el inventario actual en el fichero JSON.
         Convierte los objetos Producto y Proveedor en diccionarios.
         """
-        # TODO: recorrer self.productos y guardar los datos en formato JSON
-        pass
+        
+        with open("inventario.json", "w", encoding="utf-8") as archivo:
+            self.productos = json.dump(self.productos, archivo)
 
     def anadir_producto(self, producto):
         """
         Añade un nuevo producto al inventario si el código no está repetido.
         """
-        # TODO: comprobar si el código ya existe y, si no, añadirlo
-        pass
+        
+        self.productos.append(producto)
 
     def mostrar(self):
         """
         Muestra todos los productos del inventario.
         """
-        # TODO: mostrar todos los productos almacenados
-        pass
+        for i in self.productos:
+            print(f"[{i["codigo"]}]  {i["nombre"]} - {i["precio"]} € ( {i["stock"]} uds.) {i["proveedor"]}")
 
     def buscar(self, codigo):
         """
@@ -128,6 +144,9 @@ class Inventario:
 # ======================================================
 
 def main():
+    inventario = Inventario("inventario.json")
+    inventario.cargar()
+
     # TODO: crear el objeto Inventario y llamar a los métodos según la opción elegida
     while True:
         print("\n=== GESTIÓN DE INVENTARIO ===")
@@ -142,8 +161,32 @@ def main():
 
         opcion = input("Seleccione una opción: ")
 
-        # TODO: implementar las acciones correspondientes a cada opción del menú
+        match opcion:
+            case "1":
+                codigo = input("¿Que codigo tiene el producto?: ")
+                nombre = input("¿Como se llama el producto?: ")
+                precio = int(input("¿Cuanto vale el producto?: "))
+                stock = int(input("¿Cuatas unidades hay?: "))
+                proveedor = Proveedor("hola", "wenas") 
 
+                producto = Producto(codigo, nombre, precio, stock, proveedor)
+                inventario.anadir_producto(producto)
+            case "2":
+                inventario.mostrar()
+            case "3":
+                pass
+            case "4":
+                pass
+            case "5":
+                pass
+            case "6":
+                pass
+            case "7":
+                pass
+            case "8":
+                exit()
+            case _:
+                print("¿Que se supone que has escrito aqui?")
 
 if __name__ == "__main__":
     main()
