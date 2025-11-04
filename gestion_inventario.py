@@ -133,7 +133,7 @@ class Inventario:
             if producto["codigo"] == codigo:
                 self.productos.remove(producto)
             else:
-                return None
+                print("Nada que eliminar...")
         
         self.guardar()
 
